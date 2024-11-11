@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,11 +17,17 @@ const BikeListScreen = ({ navigation }) => {
   const status = useSelector((state) => state.bikes.status);
   const error = useSelector((state) => state.bikes.error);
 
+  const [filter, setFilter] = useState("All");
+
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchBikes());
     }
   }, [status, dispatch]);
+  const filteredBikes = bikes.filter((bike) => {
+    if (filter === "All") return true;
+    return bike.type === filter;
+  });
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -49,18 +55,54 @@ const BikeListScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.heading}>The World’s Best Bike</Text>
       <View style={styles.filterContainer}>
-        <TouchableOpacity style={[styles.filterButton, styles.activeFilter]}>
-          <Text style={[styles.filterText, styles.activeFilterText]}>All</Text>
+        <TouchableOpacity
+          style={[styles.filterButton, filter === "All" && styles.activeFilter]}
+          onPress={() => setFilter("All")}
+        >
+          <Text
+            style={[
+              styles.filterText,
+              filter === "All" && styles.activeFilterText,
+            ]}
+          >
+            All
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText1}>Roadbike</Text>
+        <TouchableOpacity
+          style={[
+            styles.filterButton,
+            filter === "Roadbike" && styles.activeFilter,
+          ]}
+          onPress={() => setFilter("Roadbike")}
+        >
+          <Text
+            style={[
+              styles.filterText1,
+              filter === "Roadbike" && styles.activeFilterText,
+            ]}
+          >
+            Roadbike
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText1}>Mountain</Text>
+        <TouchableOpacity
+          style={[
+            styles.filterButton,
+            filter === "Mountain" && styles.activeFilter,
+          ]}
+          onPress={() => setFilter("Mountain")}
+        >
+          <Text
+            style={[
+              styles.filterText1,
+              filter === "Mountain" && styles.activeFilterText,
+            ]}
+          >
+            Mountain
+          </Text>
         </TouchableOpacity>
       </View>
       <FlatList
-        data={bikes}
+        data={filteredBikes}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         numColumns={2}
